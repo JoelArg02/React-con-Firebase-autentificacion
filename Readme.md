@@ -1,7 +1,11 @@
-# Aplicación de Gestión de Créditos
+# Aplicación de Gestión de Invetarios de bodega
 
 ## Descripción
-Este proyecto es una aplicación web diseñada para la gestión de créditos. Facilita el seguimiento y la administración de créditos, pagos y clientes. Está construida con [React](https://reactjs.org/) y utiliza [Bootstrap](https://getbootstrap.com/) para el diseño de la interfaz de usuario.
+Esta es una aplicación web simple desarrollada con React y Firebase que permite a los usuarios gestionar una lista de productos. Los usuarios pueden ver productos, agregar nuevos productos, editar productos existentes y eliminar productos de la lista.
+
+## Requisitos
+
+Asegúrate de tener Node.js y npm instalados en tu sistema antes de ejecutar la aplicación.
 
 ## Características
 - Gestión de créditos y clientes.
@@ -15,21 +19,28 @@ Este proyecto es una aplicación web diseñada para la gestión de créditos. Fa
 - Base de Datos: PostgreSQL.
 - Autenticación: JWT.
 
-## Instalación y Ejecución
-Para instalar y ejecutar este proyecto localmente, sigue los siguientes pasos:
+## Instalación
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/tu-usuario/tu-repositorio.git
+Sigue estos pasos para instalar y ejecutar la aplicación:
 
-###Contribuciones
-Las contribuciones son bienvenidas. Para contribuir, por favor, haz un fork del repositorio y crea un pull request con tus cambios.
+1. Clona este repositorio: `git clone https://github.com/tu-usuario/tu-repo.git`
+2. Ve al directorio del proyecto: `cd mi-aplicacion`
+3. Instala las dependencias: `npm install`
+4. Configura las credenciales de Firebase en `src/api/firebase-config.js`.
+5. Inicia la aplicación: `npm start`
 
-##Licencia
-Especificar la licencia del proyecto.
+## Uso
 
-   ```shell
-   git clone https://github.com/JoelArg02
-   cd nombre-del-repositorio
+1. Accede a la aplicación en tu navegador: `http://localhost:puerto`
+2. Inicia sesión con tu cuenta o crea una nueva.
+3. Puedes ver la lista de productos, agregar nuevos productos, editar productos existentes y eliminar productos.
+   
+## Contribución
 
-Se hizo uso de validator
+Si deseas contribuir a este proyecto, sigue estos pasos:
+
+1. Haz un fork del repositorio.
+2. Crea una nueva rama: `git checkout -b nueva-caracteristica`
+3. Haz tus cambios y realiza un commit: `git commit -m 'Agrega nueva característica'`
+4. Sube tus cambios: `git push origin nueva-caracteristica`
+5. Envía un pull request.
