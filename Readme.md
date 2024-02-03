@@ -8,17 +8,17 @@ Esta es una aplicación web simple desarrollada con React y Firebase que permite
 Asegúrate de tener Node.js y npm instalados en tu sistema antes de ejecutar la aplicación.
 
 ## Características
-- Gestión de créditos y clientes.
-- Seguimiento de pagos y saldo.
-- Interfaz de usuario intuitiva y responsiva.
-- Seguridad y autenticación de usuarios.
-
+- Autentifiacion via email y google.
+- CRUD completo de productos
+- Visualización de activación de productos
+  
 ## Tecnologías Utilizadas
-- Frontend: React, Bootstrap.
-- Backend: Node.js, Express.js.
-- Base de Datos: PostgreSQL.
-- Autenticación: JWT.
-
+- React (biblioteca de JavaScript para la interfaz de usuario)
+- React Bootstrap (para componentes de interfaz de usuario)
+- Firebase Authentication (para autenticación de usuarios)
+- Firebase Firestore (para la base de datos)
+- Vite
+  
 ## Instalación
 
 Sigue estos pasos para instalar y ejecutar la aplicación:
