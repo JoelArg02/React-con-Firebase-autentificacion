@@ -23,9 +23,9 @@ Asegúrate de tener Node.js y npm instalados en tu sistema antes de ejecutar la 
 
 Sigue estos pasos para instalar y ejecutar la aplicación:
 
-1. Clona este repositorio: `git clone https://github.com/tu-usuario/tu-repo.git`
-2. Ve al directorio del proyecto: `cd mi-aplicacion`
-3. Instala las dependencias: `npm install`
+1. Clona este repositorio: `git clone https://github.com/JoelArg02/React-con-Firebase-autentificacion.git`
+2. Ve al directorio del proyecto: `cd A`
+3. Instala las dependencias: `npm i`
 4. Configura las credenciales de Firebase en `src/api/firebase-config.js`.
 5. Inicia la aplicación: `npm start`
 
@@ -44,3 +44,6 @@ Si deseas contribuir a este proyecto, sigue estos pasos:
 3. Haz tus cambios y realiza un commit: `git commit -m 'Agrega nueva característica'`
 4. Sube tus cambios: `git push origin nueva-caracteristica`
 5. Envía un pull request.
+
+## Notas
+No se uso .env ya que se dejo para pruebas los datos, proximamente se agregara el archivo .env
