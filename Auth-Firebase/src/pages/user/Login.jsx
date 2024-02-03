@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { Card, Button, Modal, Form, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { isEmail } from "validator"; // Importa la función isEmail de validator
 
 const Login = () => {
   const navigate = useNavigate();
@@ -46,22 +47,34 @@ const Login = () => {
 
   const handleSignInWithEmailAndPassword = async (e) => {
     e.preventDefault();
+    if (!isEmail(email)) {
+      setErrorAlert("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+    if (password.length < 6) {
+      setErrorAlert("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-  
+
       if (user) {
         const token = await user.getIdToken();
-  
+
         if (token) {
-          // Si el token existe, actualiza el estado y redirige
           setUser({
             displayName: user.displayName || "Usuario sin nombre",
             email: user.email,
             photoURL: user.photoURL,
           });
           setShowModal(true);
-          localStorage.setItem("userToken", token); // Guarda el token en localStorage
+          localStorage.setItem("userToken", token);
           setErrorAlert(null);
           navigate("/home");
         }
@@ -71,7 +84,6 @@ const Login = () => {
       setErrorAlert("Usuario o contraseña incorrectos.");
     }
   };
-  
 
   return (
     <div
@@ -128,7 +140,6 @@ const Login = () => {
               <p>
                 <strong>Correo Electrónico:</strong> {user.email}
               </p>
-              {/* Puedes agregar más datos del usuario aquí */}
             </div>
           )}
         </Modal.Body>

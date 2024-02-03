@@ -28,10 +28,8 @@ Las contribuciones son bienvenidas. Para contribuir, por favor, haz un fork del 
 ##Licencia
 Especificar la licencia del proyecto.
 
+   ```shell
+   git clone https://github.com/JoelArg02
+   cd nombre-del-repositorio
 
-### Notas:
-- **Descripción**: Proporciona un resumen de lo que hace tu aplicación.
-- **Características**: Enumera las características principales de la aplicación.
-- **Tecnologías Utilizadas**: Asegúrate de listar todas las tecnologías importantes que utilizas.
-- **Instalación y Ejecución**: Adapta estos pasos según tu configuración específica y requisitos de instalación.
-- **Uso**: Puedes expandir esta sección con detalles más específicos sobre cómo usar
+Se hizo uso de validator

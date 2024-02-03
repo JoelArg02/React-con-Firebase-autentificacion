@@ -4,13 +4,15 @@ import { auth } from "./api/firebase-config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import Header from "./general/Header";
-import Login from "./pages/login/Login";
-import Register from "./pages/register/Register";
+import Login from "./pages/user/Login";
+import Register from "./pages/user/Register";
+import ChangePassword from "./pages/user/Change-password";
 import Home from "./pages/home/Home";
 import ProtectedRoute from "./pages/components/ProtectedRoute";
 import HomePage from "./pages/home/HomePage";
 import NotFoundPage from "./general/NotFoundPage";
-import AddItem from "./pages/products/addItem";
+import AddItem from "./pages/products/AddItem";
+import Items from "./pages/products/Items";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -54,6 +56,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-item"
+            element={
+              <ProtectedRoute>
+                <AddItem />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/items"
+            element={
+              <ProtectedRoute>
+                <Items />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
               </ProtectedRoute>
             }
           />
