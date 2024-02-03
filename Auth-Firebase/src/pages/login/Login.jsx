@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { auth } from "../../api/firebase-config";
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
-import Alert from "react-bootstrap/Alert";
+import { Card, Button, Modal, Form, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
-const LoginForm = () => {
+const Login = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
@@ -24,43 +22,56 @@ const LoginForm = () => {
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
-        const user = result.user;
+        if (token) {
+          const user = result.user;
 
-        setUser({
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-        });
-        setShowModal(true);
+          setUser({
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+          });
+          setShowModal(true);
 
-        localStorage.setItem("userToken", token);
+          localStorage.setItem("userToken", token);
+          navigate("/home");
+        }
       })
       .catch((error) => {
         console.error("Error al iniciar sesión con Google:", error.message);
+        setErrorAlert(
+          "Error al iniciar sesión con Google. Por favor, inténtalo de nuevo."
+        );
       });
   };
 
   const handleSignInWithEmailAndPassword = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      setUser({
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-      });
-      setShowModal(true);
-      setErrorAlert(null); // Limpiar cualquier alerta anterior
+  
+      if (user) {
+        const token = await user.getIdToken();
+  
+        if (token) {
+          // Si el token existe, actualiza el estado y redirige
+          setUser({
+            displayName: user.displayName || "Usuario sin nombre",
+            email: user.email,
+            photoURL: user.photoURL,
+          });
+          setShowModal(true);
+          localStorage.setItem("userToken", token); // Guarda el token en localStorage
+          setErrorAlert(null);
+          navigate("/home");
+        }
+      }
     } catch (error) {
       console.error("Error al iniciar sesión:", error.message);
-      setErrorAlert("Usuario o contraseña incorrectos."); // Mostrar el mensaje de error
+      setErrorAlert("Usuario o contraseña incorrectos.");
     }
   };
+  
 
   return (
     <div
@@ -131,4 +142,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default Login;

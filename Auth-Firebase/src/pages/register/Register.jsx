@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { auth } from '../../api/firebase-config';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup,updateProfile } from 'firebase/auth';
+import { Card, Button, Form, Modal, Alert} from 'react-bootstrap';
 
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import Alert from 'react-bootstrap/Alert';
-
-const RegistrationForm = () => {
+const Register = () => {
     const [user, setUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
@@ -148,4 +143,4 @@ const RegistrationForm = () => {
     );
 };
 
-export default RegistrationForm;
+export default Register;
