@@ -19,3 +19,5 @@ Sigue estos pasos para instalar y configurar el proyecto:
    ```shell
    git clone https://github.com/JoelArg02
    cd nombre-del-repositorio
+
+Se hizo uso de validator
