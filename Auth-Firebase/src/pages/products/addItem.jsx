@@ -4,6 +4,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { Button, Form, Row, Col, Card, Toast } from "react-bootstrap";
 import Loading from "../../general/Loading";
 
+
 const AddItem = () => {
   const [formData, setFormData] = useState({
     name: "",

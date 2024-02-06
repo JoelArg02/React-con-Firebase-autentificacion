@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import { auth } from "./api/firebase-config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -11,8 +16,8 @@ import Home from "./pages/home/Home";
 import ProtectedRoute from "./pages/components/ProtectedRoute";
 import HomePage from "./pages/home/HomePage";
 import NotFoundPage from "./general/NotFoundPage";
-import AddItem from "./pages/products/AddItem";
 import Items from "./pages/products/Items";
+import AddItem from "./pages/products/AddItem";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -30,6 +35,18 @@ function App() {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const checkToken = () => {
+      const token = localStorage.getItem("userToken");
+      if (token) {
+        console.log("sin problemas");
+      } else {
+        onLogout();
+      }
+    };
+    checkToken();
   }, []);
 
   const onLogout = () => {

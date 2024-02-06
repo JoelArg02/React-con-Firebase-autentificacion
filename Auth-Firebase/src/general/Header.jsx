@@ -26,9 +26,20 @@ const Header = ({ userName, onLogout }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
-        <a className="navbar-brand" href="/" onClick={handleBrandClick}>
-          Bodegita
-        </a>
+        {userName ? (
+          <>
+            <a className="navbar-brand" href="/home" onClick={handleBrandClick}>
+              Bodegita
+            </a>
+          </>
+        ) : (
+          <>
+            <a className="navbar-brand" href="/home" onClick={handleBrandClick}>
+              Bodegita
+            </a>
+          </>
+        )}
+
         <button
           className="navbar-toggler"
           type="button"
