@@ -56,13 +56,13 @@ exports.updateItem = async (req, res) => {
 
 exports.deleteItem = async (req, res) => {
     const { id } = req.params; 
-
+    console.log('id', id);
     try {
         await db.collection('items').doc(id).delete(); 
         res.json({ message: 'Item deleted successfully' }); 
     } catch (error) {
+        console.error("Error deleting item:", error);
         res.status(500).json({ error: error.message });
     }
 };
-
 

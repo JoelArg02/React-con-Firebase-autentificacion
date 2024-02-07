@@ -8,7 +8,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { getItems, updateItem, deleteItem } from "../../api/firebase-db"; // Ajusta la ruta de importación según sea necesario
-
+import "./Item.css";
 const PAGE_SIZE = 10;
 
 const ItemList = () => {
@@ -19,10 +19,12 @@ const ItemList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentItem, setCurrentItem] = useState({
+    id: "",
     name: "",
     quantity: "",
     category: "",
     price: "",
+    active: false,
   });
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const ItemList = () => {
     setLoading(true);
     try {
       const response = await getItems(page, PAGE_SIZE);
-      console.log("Response from getItems:", response); // Agregar esta línea
+      
       setItems(response);
       setTotalPages(Math.ceil(response.length / PAGE_SIZE));
     } catch (error) {
@@ -53,9 +55,16 @@ const ItemList = () => {
   };
 
   const saveItem = async () => {
-    await updateItem(currentItem.id, currentItem);
-    setShowEditModal(false);
-    fetchItems(currentPage); // Refrescar los items tras la edición
+    setLoading(true);
+    try {
+      await updateItem(currentItem.id, currentItem);
+      setShowEditModal(false);
+      fetchItems(currentPage);
+    } catch (error) {
+      console.error("Error updating item: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const confirmDeleteItem = (item) => {
@@ -64,9 +73,29 @@ const ItemList = () => {
   };
 
   const executeDeleteItem = async () => {
-    await deleteItem(currentItem.id);
-    setShowDeleteModal(false);
-    fetchItems(currentPage); // Refrescar los items tras la eliminación
+    setLoading(true);
+    try {
+      await deleteItem(currentItem.id);
+      setShowDeleteModal(false);
+      fetchItems(currentPage);
+    } catch (error) {
+      console.error("Error deleting item: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleItemStatus = async (item) => {
+    setLoading(true);
+    const updatedItem = { ...item, active: !item.active };
+    try {
+      await updateItem(updatedItem.id, updatedItem);
+      fetchItems(currentPage);
+    } catch (error) {
+      console.error("Error updating item status: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Componente de paginación
@@ -93,30 +122,51 @@ const ItemList = () => {
             <th>Cantidad</th>
             <th>Categoría</th>
             <th>Precio</th>
+            <th>Estado</th> {/* Nuevo encabezado para el estado del artículo */}
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id}>
+            <tr key={item.id} className={!item.active ? "row-inactive" : ""}>
               <td>{item.name}</td>
               <td>{item.quantity}</td>
               <td>{item.category}</td>
               <td>${item.price}</td>
               <td>
+                <Badge bg={item.active ? "success" : "secondary"}>
+                  {item.active ? "Activo" : "Inactivo"}
+                </Badge>
+              </td>
+              <td>
                 <Button
                   variant="info"
                   size="sm"
+                  className={!item.active ? "button-inactive" : ""}
                   onClick={() => startEditItem(item)}
+                  disabled={loading || !item.active} // Desactivar botones para artículos inactivos
                 >
                   <FontAwesomeIcon icon={faEdit} />
                 </Button>{" "}
                 <Button
                   variant="danger"
                   size="sm"
+                  className={!item.active ? "button-inactive" : ""}
                   onClick={() => confirmDeleteItem(item)}
+                  disabled={loading || !item.active} // Desactivar botones para artículos inactivos
                 >
                   <FontAwesomeIcon icon={faTrash} />
+                </Button>{" "}
+                <Button
+                  variant={item.active ? "secondary" : "success"}
+                  size="sm"
+                  className={!item.active ? "button-inactive" : ""}
+                  onClick={() => toggleItemStatus(item)}
+                  disabled={loading}
+                >
+                  <FontAwesomeIcon
+                    icon={item.active ? faToggleOff : faToggleOn}
+                  />
                 </Button>
               </td>
             </tr>
@@ -177,7 +227,7 @@ const ItemList = () => {
           <Button variant="secondary" onClick={() => setShowEditModal(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={saveItem}>
+          <Button variant="primary" onClick={saveItem} disabled={loading}>
             Guardar Cambios
           </Button>
         </Modal.Footer>
@@ -195,7 +245,11 @@ const ItemList = () => {
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={executeDeleteItem}>
+          <Button
+            variant="danger"
+            onClick={executeDeleteItem}
+            disabled={loading}
+          >
             Eliminar
           </Button>
         </Modal.Footer>

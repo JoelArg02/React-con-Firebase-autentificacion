@@ -1,0 +1,9 @@
+.row-inactive {
+    background-color: #f0f0f0;
+    color: #6c757d;
+  }
+  
+  .button-inactive {
+    opacity: 0.5;
+  }
+  
