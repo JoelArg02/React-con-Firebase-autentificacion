@@ -2,6 +2,7 @@ const admin = require('firebase-admin');
 const db = admin.firestore();
 
 exports.getItems = async (req, res) => {
+    console.log('getItems');
     try {
         const querySnapshot = await db.collection('items').get();
         const items = [];

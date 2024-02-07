@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { db } from "../../api/firebase-config";
-import { collection, addDoc } from "firebase/firestore";
 import { Button, Form, Row, Col, Card, Toast } from "react-bootstrap";
 import Loading from "../../general/Loading";
-
+import { addItem } from "../../api/firebase-db"; // Asegúrate de que la ruta de importación sea correcta
 
 const AddItem = () => {
   const [formData, setFormData] = useState({
@@ -15,58 +13,41 @@ const AddItem = () => {
   });
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
-  const categories = [
-    "Electrónica",
-    "Muebles",
-    "Ropa",
-    "Alimentos",
-    "Herramientas",
-  ];
   const [isLoading, setLoading] = useState(false);
-
-  const itemsCollectionRef = collection(db, "items");
-
-  const addItem = async () => {
-    setLoading(true);
-    setShowSuccessToast(false);
-    setShowErrorToast(false);
-
-    try {
-      await addDoc(itemsCollectionRef, {
-        ...formData,
-        quantity: Number(formData.quantity),
-        price: Number(formData.price),
-      });
-
-      setFormData({
-        name: "",
-        quantity: 0,
-        category: "",
-        price: "",
-        description: "",
-      });
-
-      setShowSuccessToast(true);
-    } catch (error) {
-      setShowErrorToast(true);
-      console.error("Error al agregar artículo:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const categories = ["Electrónica", "Muebles", "Ropa", "Alimentos", "Herramientas"];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  const handleAddItem = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setShowSuccessToast(false);
+    setShowErrorToast(false);
+
+    try {
+      await addItem(formData);
+      setFormData({ name: "", quantity: 0, category: "", price: "", description: "" });
+      setShowSuccessToast(true);
+    } catch (error) {
+      console.error("Error al agregar artículo:", error);
+      setShowErrorToast(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (isLoading) {
     return <Loading />;
   }
+
   return (
     <div className="container mt-5">
       <h2>Agregar Nuevo Artículo</h2>
       <Card className="p-4 shadow">
-        <Form>
+        <Form onSubmit={handleAddItem}>
           <Row className="mb-3">
             <Form.Group as={Col}>
               <Form.Label>Nombre del Artículo</Form.Label>
@@ -133,11 +114,10 @@ const AddItem = () => {
             </Form.Group>
           </Row>
 
-          <Button variant="primary" onClick={addItem}>
-            Agregar Artículo
-          </Button>
+          <Button variant="primary" type="submit">Agregar Artículo</Button>
         </Form>
       </Card>
+
       <Toast
         show={showSuccessToast}
         onClose={() => setShowSuccessToast(false)}

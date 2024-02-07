@@ -14,7 +14,7 @@ app.use(express.json());
 const itemsRouter = require('./routes/itemsRouter');
 
 
-app.use('/api/items', itemsRouter);
+app.use('/api/', itemsRouter);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

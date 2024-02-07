@@ -1,62 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../../api/firebase-config";
-import { collection, getDocs, query, orderBy, limit, startAfter, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Table, Button, Modal, Form, Badge } from "react-bootstrap";
+import { Table, Button, Modal, Form, Badge, Pagination } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faToggleOn, faToggleOff, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faToggleOn,
+  faToggleOff,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { getItems, updateItem, deleteItem } from "../../api/firebase-db"; // Ajusta la ruta de importación según sea necesario
 
 const PAGE_SIZE = 10;
 
 const ItemList = () => {
   const [items, setItems] = useState([]);
-  const [lastVisible, setLastVisible] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [currentItem, setCurrentItem] = useState(null);
+  const [currentItem, setCurrentItem] = useState({
+    name: "",
+    quantity: "",
+    category: "",
+    price: "",
+  });
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    fetchItems(currentPage);
+  }, [currentPage]);
 
-  const fetchItems = async () => {
+  const fetchItems = async (page) => {
     setLoading(true);
-    const q = query(collection(db, "items"), orderBy("name"), limit(PAGE_SIZE));
-    const querySnapshot = await getDocs(q);
-    const lastVisibleItem = querySnapshot.docs[querySnapshot.docs.length - 1];
-    setLastVisible(lastVisibleItem);
-
-    const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isActive: doc.data().isActive ?? true }));
-    setItems(items);
-    setLoading(false);
+    try {
+      const response = await getItems(page, PAGE_SIZE);
+      console.log("Response from getItems:", response); // Agregar esta línea
+      setItems(response);
+      setTotalPages(Math.ceil(response.length / PAGE_SIZE));
+    } catch (error) {
+      console.error("Error fetching items: ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const fetchMoreItems = async () => {
-    if (!lastVisible) return;
-
-    setLoading(true);
-    const q = query(
-      collection(db, "items"),
-      orderBy("name"),
-      startAfter(lastVisible),
-      limit(PAGE_SIZE)
-    );
-
-    const querySnapshot = await getDocs(q);
-    const lastVisibleItem = querySnapshot.docs[querySnapshot.docs.length - 1];
-    setLastVisible(lastVisibleItem);
-
-    const newItems = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isActive: doc.data().isActive ?? true }));
-    setItems(prevItems => [...prevItems, ...newItems]);
-    setLoading(false);
-  };
-
-  const toggleActiveStatus = async (item) => {
-    const itemRef = doc(db, "items", item.id);
-    await updateDoc(itemRef, {
-      isActive: !item.isActive
-    });
-    fetchItems(); // Re-fetch items to update the UI
+  const handleEditChange = (e) => {
+    setCurrentItem({ ...currentItem, [e.target.name]: e.target.value });
   };
 
   const startEditItem = (item) => {
@@ -65,16 +53,9 @@ const ItemList = () => {
   };
 
   const saveItem = async () => {
-    const itemRef = doc(db, "items", currentItem.id);
-    await updateDoc(itemRef, {
-      ...currentItem
-    });
+    await updateItem(currentItem.id, currentItem);
     setShowEditModal(false);
-    fetchItems(); // Re-fetch items to update the UI
-  };
-
-  const handleEditChange = (e) => {
-    setCurrentItem({ ...currentItem, [e.target.name]: e.target.value });
+    fetchItems(currentPage); // Refrescar los items tras la edición
   };
 
   const confirmDeleteItem = (item) => {
@@ -82,11 +63,25 @@ const ItemList = () => {
     setShowDeleteModal(true);
   };
 
-  const deleteItem = async () => {
-    await deleteDoc(doc(db, "items", currentItem.id));
+  const executeDeleteItem = async () => {
+    await deleteItem(currentItem.id);
     setShowDeleteModal(false);
-    fetchItems(); // Re-fetch items to update the UI
+    fetchItems(currentPage); // Refrescar los items tras la eliminación
   };
+
+  // Componente de paginación
+  const paginationItems = [];
+  for (let number = 1; number <= totalPages; number++) {
+    paginationItems.push(
+      <Pagination.Item
+        key={number}
+        active={number === currentPage}
+        onClick={() => setCurrentPage(number)}
+      >
+        {number}
+      </Pagination.Item>
+    );
+  }
 
   return (
     <div className="container mt-5">
@@ -98,39 +93,28 @@ const ItemList = () => {
             <th>Cantidad</th>
             <th>Categoría</th>
             <th>Precio</th>
-            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id} style={{ opacity: item.isActive ? 1 : 0.5 }}>
+            <tr key={item.id}>
               <td>{item.name}</td>
               <td>{item.quantity}</td>
               <td>{item.category}</td>
               <td>${item.price}</td>
               <td>
-                <Badge bg={item.isActive ? "success" : "secondary"}>
-                  {item.isActive ? "Activo" : "Inactivo"}
-                </Badge>
-              </td>
-              <td>
-                <Button variant="info" size="sm" onClick={() => startEditItem(item)}>
-                  <FontAwesomeIcon icon={faEdit} />
-                </Button>
                 <Button
-                  variant="warning"
+                  variant="info"
                   size="sm"
-                  onClick={() => toggleActiveStatus(item)}
-                  className="ms-2"
+                  onClick={() => startEditItem(item)}
                 >
-                  <FontAwesomeIcon icon={item.isActive ? faToggleOff : faToggleOn} />
-                </Button>
+                  <FontAwesomeIcon icon={faEdit} />
+                </Button>{" "}
                 <Button
                   variant="danger"
                   size="sm"
                   onClick={() => confirmDeleteItem(item)}
-                  className="ms-2"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </Button>
@@ -140,22 +124,23 @@ const ItemList = () => {
         </tbody>
       </Table>
       {loading && <p>Cargando...</p>}
-      <Button onClick={fetchMoreItems} disabled={loading}>
-        Cargar más
-      </Button>
+      <Pagination>{paginationItems}</Pagination>
 
+      {/* Modales de edición y eliminación */}
+      {/* Modal de Edición */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Editar Artículo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
+            {/* Campos del formulario para edición */}
             <Form.Group className="mb-3">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
                 name="name"
-                value={currentItem?.name}
+                value={currentItem.name}
                 onChange={handleEditChange}
               />
             </Form.Group>
@@ -164,7 +149,7 @@ const ItemList = () => {
               <Form.Control
                 type="number"
                 name="quantity"
-                value={currentItem?.quantity}
+                value={currentItem.quantity}
                 onChange={handleEditChange}
               />
             </Form.Group>
@@ -173,7 +158,7 @@ const ItemList = () => {
               <Form.Control
                 type="text"
                 name="category"
-                value={currentItem?.category}
+                value={currentItem.category}
                 onChange={handleEditChange}
               />
             </Form.Group>
@@ -182,7 +167,7 @@ const ItemList = () => {
               <Form.Control
                 type="text"
                 name="price"
-                value={currentItem?.price}
+                value={currentItem.price}
                 onChange={handleEditChange}
               />
             </Form.Group>
@@ -198,18 +183,20 @@ const ItemList = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal de Confirmación de Eliminación */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirmar Eliminación</Modal.Title>
         </Modal.Header>
-        <Modal.Body>¿Seguro que deseas borrar este artículo?</Modal.Body>
+        <Modal.Body>
+          ¿Estás seguro de que deseas eliminar este artículo?
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={deleteItem}>
-            Borrar
+          <Button variant="danger" onClick={executeDeleteItem}>
+            Eliminar
           </Button>
         </Modal.Footer>
       </Modal>
