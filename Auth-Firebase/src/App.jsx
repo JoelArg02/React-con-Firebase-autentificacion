@@ -16,8 +16,9 @@ import Home from "./pages/home/Home";
 import ProtectedRoute from "./pages/components/ProtectedRoute";
 import HomePage from "./pages/home/HomePage";
 import NotFoundPage from "./general/NotFoundPage";
-import Items from "./pages/products/Items";
 import AddItem from "./pages/products/AddItem";
+import Items from "./pages/products/Items";
+
 
 function App() {
   const [user, setUser] = useState(null);

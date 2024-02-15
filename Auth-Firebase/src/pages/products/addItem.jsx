@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Form, Row, Col, Card, Toast } from "react-bootstrap";
 import Loading from "../../general/Loading";
-import { addItem } from "../../api/firebase-db"; // Asegúrate de que la ruta de importación sea correcta
+import { addItem } from "../../api/firebase-db"; 
 
 const AddItem = () => {
   const [formData, setFormData] = useState({

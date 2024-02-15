@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,6 +23,7 @@ const Header = ({ userName, onLogout }) => {
     navigate(path);
   };
 
+  
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
@@ -34,7 +35,7 @@ const Header = ({ userName, onLogout }) => {
           </>
         ) : (
           <>
-            <a className="navbar-brand" href="/home" onClick={handleBrandClick}>
+            <a className="navbar-brand" href="/" onClick={handleBrandClick}>
               Bodegita
             </a>
           </>
